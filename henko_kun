@@ -1,0 +1,151 @@
+
+@echo off
+setlocal enabledelayedexpansion
+
+rem 240123 作成
+rem chcp 932
+chcp 65001
+
+rem フォルダのパスを取得
+set DIRECTORY_PATH=%~dp0
+for %%i in ("%DIRECTORY_PATH:~0,-1%") do set THIS_DIRECTORY=%%~ni
+
+echo フォルダ名取得
+echo %THIS_DIRECTORY%
+echo;
+
+rem フォルダのパスを取得
+rem set "folder_path=%cd%"
+
+rem 対象ファイルの拡張子を入力
+rem set /p "extension=extenPlease"
+
+rem 文字列の前に入れる
+rem set /p "front=Please Input Start Comment"
+set "front=%THIS_DIRECTORY%"
+
+rem 変更前の文字列
+rem set /p "back=filenamePlease:end"
+
+set "space= "
+set "moeny=0 "
+
+
+rem https://rainbow-engine.com/batch-get-filepath-filename/
+
+echo;
+echo 変更するファイル名リスト一覧
+echo;
+for %%f in (*) do ( 
+    set "old_name=%%~nxf"
+    set "extension=%%~xf"
+    set "new_name=!front!!space!!old_name!"
+    set "UPDATE=%%~ti"
+
+    if !extension! == .bat ( 
+        set "bat=bir"
+    ) else (
+    echo %%f
+    )
+) 
+echo;
+echo;
+echo 変更後のファイル名リスト一覧
+echo;
+
+set x=0
+for %%f in (*) do ( 
+    set "old_name=%%~nxf"
+    set "extension=%%~xf"
+    set "old_file=%%~nxf"
+    set "UPDATE=%%~tf"
+    set /a x=x+1
+
+    set YYYYMMDD=!UPDATE:~0,4!!UPDATE:~5,2!!UPDATE:~8,2!
+    
+    echo !x!
+    echo !old_file!
+    echo !UPDATE!
+    echo !YYYYMMDD!
+    
+rem     for %%i in %old_file% do set "UPDATE=%%~ti"
+    
+    rem    set "new_name=!front!!space!!old_name!"
+    set "new_name=!front!!space!!YYYYMMDD!!space!!moeny!!extension!"
+
+ 
+    if !extension! == .bat ( 
+        set "bat=bir"
+    ) else (
+    echo !new_name!
+    )
+) 
+
+echo;
+
+REM ########## 処理実行の確認 ##########
+SET /P selected="処理を開始しますか？(Y=YES / N=NO)？"
+if /i {%selected%}=={y} (goto :yes01)
+if /i {%selected%}=={yes} (goto :yes01)
+if /i {%selected%}=={debug} (goto :debug01)
+
+REM ########## No 処理の中断 ##########
+ECHO "No が選択されました。処理を中断し、プログラムを終了します。"
+pause
+EXIT
+
+REM ########## Debug mode ##########
+:debug01
+
+
+for %%f in (*) do ( 
+    set "old_name=%%~nxf"
+    set "extension=%%~xf"
+
+    set "new_name=!old_name~,3%!"
+
+    if !extension! == .bat ( 
+        echo OK
+    ) else (
+    echo !new_name!
+    )
+) 
+
+
+pause
+EXIT
+
+
+REM ########## Yes 処理の開始 ##########
+:yes01
+ECHO "Yesが選択されました。処理を開始します。"
+
+set x=0
+for %%f in (*) do ( 
+    set "old_name=%%~nxf"
+    set "extension=%%~xf"
+    set "old_file=%%~nxf"
+    set "UPDATE=%%~tf"
+    set /a x=x+1
+
+    set YYYYMMDD=!UPDATE:~0,4!!UPDATE:~5,2!!UPDATE:~8,2!
+
+rem  set "new_name=!front!!space!!old_name!"
+    set "new_name=!front!!space!!YYYYMMDD!!space!!moeny!!extension!"
+
+
+    if !extension! == .bat ( 
+        echo NO 
+    ) else (
+    ren "%%f" "!new_name!"
+    )
+) 
+
+echo 完了
+pause
+
+
+
+
+
+
